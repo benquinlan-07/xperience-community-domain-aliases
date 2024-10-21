@@ -42,7 +42,7 @@ public class ExtensionMiddleware
                 return null;
 
             var channel = channelInfoProvider.Get()
-                .WhereEquals(nameof(ChannelInfo.ChannelName), domainAlias.WebsiteChannelDomainAliasChannelId)
+                .WhereEquals(nameof(ChannelInfo.ChannelID), domainAlias.WebsiteChannelDomainAliasChannelId)
                 .FirstOrDefault();
 
             if (channel == null)
