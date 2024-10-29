@@ -6,7 +6,7 @@ This package provides XbK administrators with an interface to assign additional 
 
 The extension was developed to meet requirement to be able to use a hosted development site that references the same database shared with the development team. Due to the current limitation of Website Channels to only support a single domain binding, the hosted development site was unable to render the content for review/testing.
 
-![Xperience by Kentico Domain Aliases](https://github.com/benquinlan-07/Xperience.Extensions.DomainAliases/blob/main/images/domain-aliases.jpeg?raw=true)
+![Xperience by Kentico Domain Aliases](https://raw.githubusercontent.com/benquinlan-07/xperience-community-domain-aliases/refs/heads/main/images/domain-aliases.jpeg)
 
 ## Requirements
 
@@ -62,4 +62,4 @@ Install-Package XperienceCommunity.DomainAliases
 1. Edit your website channel.
 
 1. Select domain aliases from the menu and proceed to add the required domain aliases for your environment.
-![Xperience by Kentico Domain Aliases](https://github.com/benquinlan-07/Xperience.Extensions.DomainAliases/blob/main/images/domain-aliases.jpeg?raw=true)
+![Xperience by Kentico Domain Aliases](https://raw.githubusercontent.com/benquinlan-07/xperience-community-domain-aliases/refs/heads/main/images/domain-aliases.jpeg)
