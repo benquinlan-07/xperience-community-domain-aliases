@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BQ.Xperience.Extensions.DomainAliases.UI;
+using XperienceCommunity.DomainAliases.UI;
 using CMS.ContentEngine;
 using CMS.DataEngine;
 using Kentico.Xperience.Admin.Base;
@@ -9,7 +9,7 @@ using Kentico.Xperience.Admin.Base.UIPages;
 
 [assembly: PageExtender(typeof(WebsiteChannelEditSectionExtender))]
 
-namespace BQ.Xperience.Extensions.DomainAliases.UI;
+namespace XperienceCommunity.DomainAliases.UI;
 
 internal class WebsiteChannelEditSectionExtender : PageExtender<ChannelEditSection>
 {

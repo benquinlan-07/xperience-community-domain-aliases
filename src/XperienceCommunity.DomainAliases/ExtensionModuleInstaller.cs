@@ -1,10 +1,10 @@
-﻿using BQ.Xperience.Extensions.DomainAliases.Models;
+﻿using XperienceCommunity.DomainAliases.Models;
 using CMS.ContentEngine;
 using CMS.DataEngine;
 using CMS.FormEngine;
 using CMS.Modules;
 
-namespace BQ.Xperience.Extensions.DomainAliases;
+namespace XperienceCommunity.DomainAliases;
 
 internal class ExtensionModuleInstaller
 {

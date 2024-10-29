@@ -1,4 +1,4 @@
-# Xperience.Extensions.DomainAliases
+# XperienceCommunity.DomainAliases
 ## Description
 This package provides XbK administrators with an interface to assign additional domain aliases to a website channel.
 
@@ -7,18 +7,18 @@ When editing a website channel, a new menu item will be shown for "Domain aliase
 ## Installation
 This package can be installed from nuget using the command:
 
-    Install-Package BQ.Xperience.Extensions.DomainAliases
+    Install-Package XperienceCommunity.DomainAliases
 
 or using the .NET CLI with the command:
 
-    dotnet add package BQ.Xperience.Extensions.DomainAliases
+    dotnet add package XperienceCommunity.DomainAliases
 
 
 ## Setup
 
 Add the following line to your Program.cs to register the necessary services.
 
-    using using BQ.Xperience.Extensions.DomainAliases;
+    using XperienceCommunity.DomainAliases;
 
     ...
 

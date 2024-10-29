@@ -1,5 +1,5 @@
 ﻿using System;
-using BQ.Xperience.Extensions.DomainAliases;
+using XperienceCommunity.DomainAliases;
 using CMS.Base;
 using CMS.Core;
 using Kentico.Xperience.Admin.Base;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 [assembly: CMS.AssemblyDiscoverable]
 [assembly: CMS.RegisterModule(typeof(ExtensionAdminModule))]
 
-namespace BQ.Xperience.Extensions.DomainAliases;
+namespace XperienceCommunity.DomainAliases;
 
 internal class ExtensionAdminModule : AdminModule
 {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BQ.Xperience.Extensions.DomainAliases.Models;
+using XperienceCommunity.DomainAliases.Models;
 using CMS.ContentEngine;
 using CMS.DataEngine;
 using Microsoft.AspNetCore.Builder;
@@ -10,7 +10,7 @@ using CMS.Helpers;
 using CMS.Websites;
 
 
-namespace BQ.Xperience.Extensions.DomainAliases;
+namespace XperienceCommunity.DomainAliases;
 
 public class ExtensionMiddleware
 {
@@ -28,7 +28,7 @@ public class ExtensionMiddleware
         IProgressiveCache cache)
     {
         var hostLowered = context.Request.Host.ToString().ToLower();
-        var cacheSettings = new CacheSettings(60, $"BQ.Xperience.Extensions.DomainAliases.ExtensionMiddleware_WebsiteChannel_{hostLowered}");
+        var cacheSettings = new CacheSettings(60, $"XperienceCommunity.DomainAliases.ExtensionMiddleware_WebsiteChannel_{hostLowered}");
 
         var websiteChannel = await cache.LoadAsync(async cacheSettings =>
         {

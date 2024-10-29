@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <package >
 	<metadata>
-		<id>BQ.Xperience.Extensions.DomainAliases</id>
+		<id>XperienceCommunity.DomainAliases</id>
 		<authors>Ben Quinlan</authors>
 		<version>$version</version>
-		<projectUrl>https://github.com/benquinlan-07/Xperience.Extensions.DomainAliases</projectUrl>
+		<projectUrl>https://github.com/benquinlan-07/XperienceCommunity.DomainAliases</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>Extension for Xperience by Kentico to allow admins to set alternate domains for website channels.</description>
 		<readme>docs\README.md</readme>
@@ -16,6 +16,6 @@
     <files>
         <file src="..\..\README.md" target="docs\" />
         <file src="..\..\LICENSE.md" target="licenses\" />
-        <file src="bin\Release\net6.0\BQ.Xperience.Extensions.DomainAliases.dll" target="lib\net6.0" />
+        <file src="bin\Release\net6.0\XperienceCommunity.DomainAliases.dll" target="lib\net6.0" />
     </files>
 </package>

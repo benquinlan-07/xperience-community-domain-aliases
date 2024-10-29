@@ -1,14 +1,14 @@
-﻿using BQ.Xperience.Extensions.DomainAliases.UI;
+﻿using XperienceCommunity.DomainAliases.UI;
 using CMS.Core;
 using Kentico.Xperience.Admin.Base;
 using Kentico.Xperience.Admin.Base.UIPages;
 using Kentico.Xperience.Admin.Websites.UIPages;
 using System.Threading.Tasks;
-using BQ.Xperience.Extensions.DomainAliases.Models;
+using XperienceCommunity.DomainAliases.Models;
 
 [assembly: UIPage(parentType: typeof(ChannelEditSection), slug: "domain-aliases", uiPageType: typeof(WebsiteChannelDomainAliasListing), name: "Domain aliases", templateName: TemplateNames.LISTING, order: 10000)]
 
-namespace BQ.Xperience.Extensions.DomainAliases.UI
+namespace XperienceCommunity.DomainAliases.UI
 {
     [UINavigation(false)]
     public class WebsiteChannelDomainAliasListing : ListingPage

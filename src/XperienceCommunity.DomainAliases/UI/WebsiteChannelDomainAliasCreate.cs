@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BQ.Xperience.Extensions.DomainAliases.Models;
-using BQ.Xperience.Extensions.DomainAliases.UI;
+using XperienceCommunity.DomainAliases.Models;
+using XperienceCommunity.DomainAliases.UI;
 using CMS.ContentEngine;
 using CMS.DataEngine;
 using Kentico.Xperience.Admin.Base;
@@ -15,7 +15,7 @@ using IFormItemCollectionProvider = Kentico.Xperience.Admin.Base.Forms.Internal.
 [assembly: UIPage(parentType: typeof(WebsiteChannelDomainAliasListing), slug: "create", uiPageType: typeof(WebsiteChannelDomainAliasCreate), name: "Create", templateName: TemplateNames.EDIT, order: 10000)]
 [assembly: UIPage(parentType: typeof(WebsiteChannelDomainAliasListing), slug: PageParameterConstants.PARAMETERIZED_SLUG, uiPageType: typeof(WebsiteChannelDomainAliasEdit), name: "Edit", templateName: TemplateNames.EDIT, order: 10000)]
 
-namespace BQ.Xperience.Extensions.DomainAliases.UI;
+namespace XperienceCommunity.DomainAliases.UI;
 
 public class WebsiteChannelDomainAliasEdit : WebsiteChannelDomainAliasCreate
 {

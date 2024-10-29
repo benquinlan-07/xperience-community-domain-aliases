@@ -1,7 +1,7 @@
 ﻿using CMS.Core;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BQ.Xperience.Extensions.DomainAliases;
+namespace XperienceCommunity.DomainAliases;
 
 public static class ExtensionStartupExtensions
 {

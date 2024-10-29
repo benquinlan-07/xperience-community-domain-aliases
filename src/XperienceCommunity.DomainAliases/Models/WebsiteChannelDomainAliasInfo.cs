@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Data;
 using System.Runtime.Serialization;
-using BQ.Xperience.Extensions.DomainAliases.Models;
+using XperienceCommunity.DomainAliases.Models;
 using CMS;
 using CMS.DataEngine;
 using CMS.Helpers;
 
 [assembly: RegisterObjectType(typeof(WebsiteChannelDomainAliasInfo), WebsiteChannelDomainAliasInfo.OBJECT_TYPE)]
 
-namespace BQ.Xperience.Extensions.DomainAliases.Models;
+namespace XperienceCommunity.DomainAliases.Models;
 
 /// <summary>
 /// Data container class for <see cref="WebsiteChannelDomainAliasInfo"/>.
@@ -19,9 +19,9 @@ public partial class WebsiteChannelDomainAliasInfo : AbstractInfo<WebsiteChannel
     /// <summary>
     /// Object type.
     /// </summary>
-    public const string OBJECT_TYPE = "bqda.websitechanneldomainaliases";
-    public const string OBJECT_CLASS_NAME = "BQDA.WebsiteChannelDomainAliases";
-    public const string OBJECT_CLASS_DISPLAYNAME = "Website Channel Domain Aliases";
+    public const string OBJECT_TYPE = "xpcm.websitechanneldomainalias";
+    public const string OBJECT_CLASS_NAME = "XPCM.WebsiteChannelDomainAlias";
+    public const string OBJECT_CLASS_DISPLAYNAME = "Website Channel Domain Alias";
 
 
     /// <summary>
