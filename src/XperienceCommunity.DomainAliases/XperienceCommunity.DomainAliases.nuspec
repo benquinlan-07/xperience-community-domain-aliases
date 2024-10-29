@@ -4,7 +4,7 @@
 		<id>XperienceCommunity.DomainAliases</id>
 		<authors>Ben Quinlan</authors>
 		<version>$version</version>
-		<projectUrl>https://github.com/benquinlan-07/XperienceCommunity.DomainAliases</projectUrl>
+		<projectUrl>https://github.com/benquinlan-07/xperience-community-domain-aliases</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>Extension for Xperience by Kentico to allow admins to set alternate domains for website channels.</description>
 		<readme>docs\README.md</readme>
