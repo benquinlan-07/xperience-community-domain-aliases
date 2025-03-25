@@ -100,17 +100,6 @@ public partial class WebsiteChannelDomainAliasInfo : AbstractInfo<WebsiteChannel
 
 
     /// <summary>
-    /// Constructor for de-serialization.
-    /// </summary>
-    /// <param name="info">Serialization info.</param>
-    /// <param name="context">Streaming context.</param>
-    protected WebsiteChannelDomainAliasInfo(SerializationInfo info, StreamingContext context)
-        : base(info, context)
-    {
-    }
-
-
-    /// <summary>
     /// Creates an empty instance of the <see cref="WebsiteChannelDomainAliasInfo"/> class.
     /// </summary>
     public WebsiteChannelDomainAliasInfo()
