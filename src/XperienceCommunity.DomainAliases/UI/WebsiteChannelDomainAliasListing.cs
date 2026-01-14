@@ -22,8 +22,14 @@ namespace XperienceCommunity.DomainAliases.UI
 
             PageConfiguration.QueryModifiers.Add(new QueryModifier((query, settings) => query.WhereEquals(nameof(WebsiteChannelDomainAliasInfo.WebsiteChannelDomainAliasChannelId), ChannelId)));
 
-            PageConfiguration.HeaderActions.AddLink<WebsiteChannelDomainAliasCreate>("New domain alias", parameters: new[] { ChannelId.ToString() });
-            PageConfiguration.AddEditRowAction<WebsiteChannelDomainAliasEdit>(parameters: new[] { ChannelId.ToString() });
+            PageConfiguration.HeaderActions.AddLink<WebsiteChannelDomainAliasCreate>("New domain alias", parameters: new PageParameterValues
+                {
+                    { typeof(ChannelEditSection), ChannelId }
+                });
+            PageConfiguration.AddEditRowAction<WebsiteChannelDomainAliasEdit>(parameters: new PageParameterValues
+                {
+                    { typeof(ChannelEditSection), ChannelId }
+                });
             PageConfiguration.TableActions.AddDeleteAction("Delete");
 
             return base.ConfigurePage();

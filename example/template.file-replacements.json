@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Template for specifying file replacements to apply to the Dancing Goat project",
+  "replacements": [
+    {
+      "filePath": "DancingGoat/Program.cs",
+      "type": "search-replace",
+      "description": "Example: Add a custom service registration",
+      "replacements": [
+        {
+          "search": "using Samples.DancingGoat;",
+          "replace": "using Samples.DancingGoat;\n\nusing XperienceCommunity.DomainAliases;"
+        }
+      ]
+    },
+    {
+      "filePath": "DancingGoat/Program.cs",
+      "type": "search-replace",
+      "description": "Example: Add a custom service registration",
+      "replacements": [
+        {
+          "search": "var app = builder.Build();",
+          "replace": "builder.Services.AddDomainAliasesExtensionServices();\n\nvar app = builder.Build();"
+        }
+      ]
+    },
+    {
+      "filePath": "DancingGoat/Program.cs",
+      "type": "search-replace",
+      "description": "Example: Add a custom service registration",
+      "replacements": [
+        {
+          "search": "app.UseKentico();",
+          "replace": "app.UseDomainAliasesExtension();\n\napp.UseKentico();"
+        }
+      ]
+    },
+    {
+      "filePath": "DancingGoat/Properties/launchSettings.json",
+      "type": "full",
+      "description": "Configure launch settings with custom ports",
+      "content": "{\n  \"iisSettings\": {\n    \"windowsAuthentication\": false,\n    \"anonymousAuthentication\": true,\n    \"iisExpress\": {\n      \"applicationUrl\": \"https://localhost:53370\",\n      \"sslPort\": 53370\n    }\n  },\n  \"profiles\": {\n    \"IIS Express\": {\n      \"commandName\": \"IISExpress\",\n      \"launchBrowser\": true,\n      \"environmentVariables\": {\n        \"ASPNETCORE_ENVIRONMENT\": \"Development\"\n      }\n    },\n    \"DancingGoat\": {\n      \"commandName\": \"Project\",\n      \"launchBrowser\": true,\n      \"applicationUrl\": \"https://localhost:53370\",\n      \"environmentVariables\": {\n        \"ASPNETCORE_ENVIRONMENT\": \"Development\"\n      }\n    }\n  }\n}"
+    }
+  ]
+}

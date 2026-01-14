@@ -7,6 +7,6 @@
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="kentico.xperience.admin" Version="30.0.0" />
+		<PackageReference Include="kentico.xperience.admin" Version="31.0.2" />
 	</ItemGroup>
 </Project>
