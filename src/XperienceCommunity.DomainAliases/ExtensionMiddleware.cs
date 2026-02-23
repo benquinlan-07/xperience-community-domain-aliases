@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using CMS.ContentEngine;
+using CMS.DataEngine;
+using CMS.Helpers;
+using CMS.Websites;
+using CMS.Websites.Internal;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using XperienceCommunity.DomainAliases.Models;
-using CMS.ContentEngine;
-using CMS.DataEngine;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using CMS.Helpers;
-using CMS.Websites;
-
+using XperienceCommunity.DomainAliases.Providers;
 
 namespace XperienceCommunity.DomainAliases;
 
@@ -25,49 +26,60 @@ public class ExtensionMiddleware
         IInfoProvider<ChannelInfo> channelInfoProvider, 
         IInfoProvider<WebsiteChannelInfo> websiteChannelInfoProvider,
         IInfoProvider<WebsiteChannelDomainAliasInfo> websiteChannelDomainAliasInfoProvider,
+        ICacheDependencyBuilderFactory cacheDependencyBuilderFactory,
         IProgressiveCache cache)
     {
         var hostLowered = context.Request.Host.ToString().ToLower();
         var cacheSettings = new CacheSettings(60, $"XperienceCommunity.DomainAliases.ExtensionMiddleware_WebsiteChannel_{hostLowered}");
 
-        var websiteChannel = await cache.LoadAsync(async cacheSettings =>
+        // Attempt to get the website channel from the domain alias
+        var channelData = await cache.LoadAsync(async cacheSettings =>
         {
-            cacheSettings.Cached = false;
+            // Add the cache dependencies
+            var cacheDependencies = cacheDependencyBuilderFactory.Create()
+                .ForInfoObjects<ChannelInfo>().All()
+                .Builder().ForInfoObjects<WebsiteChannelInfo>().All()
+                .Builder().ForInfoObjects<WebsiteChannelDomainAliasInfo>().All()
+                .Builder().Build();
+            cacheSettings.CacheDependency = cacheDependencies;
 
+            // Check to see if the domain matches an alias
             var domainAlias = websiteChannelDomainAliasInfoProvider.Get()
                 .WhereEquals(nameof(WebsiteChannelDomainAliasInfo.WebsiteChannelDomainAliasDomain), hostLowered)
                 .FirstOrDefault();
 
             if (domainAlias == null)
-                return null;
+                return (null, null);
 
+            // Get the channel for the alias
             var channel = channelInfoProvider.Get()
                 .WhereEquals(nameof(ChannelInfo.ChannelID), domainAlias.WebsiteChannelDomainAliasChannelId)
                 .FirstOrDefault();
 
             if (channel == null)
-                return null;
+                return (null, null);
 
+            // Get the website for the channel
             var websiteChannel = websiteChannelInfoProvider.Get()
                 .WhereEquals(nameof(WebsiteChannelInfo.WebsiteChannelChannelID), channel.ChannelID)
                 .FirstOrDefault();
 
             if (websiteChannel == null)
-                return null;
+                return (null, null);
 
-            var dependencyCacheKeys = new HashSet<string>
-            {
-                $"{ChannelInfo.OBJECT_TYPE}|all".ToLower(),
-                $"{WebsiteChannelInfo.OBJECT_TYPE}|all".ToLower(),
-                $"{WebsiteChannelDomainAliasInfo.OBJECT_TYPE}|all".ToLower()
-            };
-            cacheSettings.CacheDependency = CacheHelper.GetCacheDependency(dependencyCacheKeys);
-
-            return websiteChannel;
+            return (WebsiteChannel: websiteChannel, Channel: channel);
         }, cacheSettings);
 
-        if (websiteChannel != null)
-            context.Request.Host = new HostString(websiteChannel.WebsiteChannelDomain);
+        // If domain alias exists, set the website channel descriptor in the HttpContext.Items for later retrieval in the pipeline
+        if (channelData.WebsiteChannel != null && channelData.Channel != null)
+        {
+            var channelDescriptor = new WebsiteChannelDescriptor
+            {
+                WebsiteChannelID = channelData.WebsiteChannel.WebsiteChannelID,
+                WebsiteChannelName = channelData.Channel.ChannelName
+            };
+            context.Items[ExtensionWebsiteChannelDomainProvider.ALIAS_WEBSITE_CHANNEL_CONTEXT_KEY] = channelDescriptor;
+        }
 
         // Call the next delegate/middleware in the pipeline.
         await _next(context);

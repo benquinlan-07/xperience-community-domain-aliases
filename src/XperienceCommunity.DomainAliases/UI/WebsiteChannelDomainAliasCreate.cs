@@ -1,15 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using XperienceCommunity.DomainAliases.Models;
-using XperienceCommunity.DomainAliases.UI;
-using CMS.ContentEngine;
+﻿using CMS.ContentEngine;
 using CMS.DataEngine;
+using CMS.Helpers;
 using Kentico.Xperience.Admin.Base;
 using Kentico.Xperience.Admin.Base.FormAnnotations;
 using Kentico.Xperience.Admin.Base.Forms;
 using Kentico.Xperience.Admin.Base.UIPages;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using CMS.Websites;
+using CMS.Websites.Routing;
+using XperienceCommunity.DomainAliases.Models;
+using XperienceCommunity.DomainAliases.UI;
 using IFormItemCollectionProvider = Kentico.Xperience.Admin.Base.Forms.Internal.IFormItemCollectionProvider;
 
 [assembly: UIPage(parentType: typeof(WebsiteChannelDomainAliasListing), slug: "create", uiPageType: typeof(WebsiteChannelDomainAliasCreate), name: "Create", templateName: TemplateNames.EDIT, order: 10000)]
@@ -19,21 +22,28 @@ namespace XperienceCommunity.DomainAliases.UI;
 
 public class WebsiteChannelDomainAliasEdit : WebsiteChannelDomainAliasCreate
 {
-    public WebsiteChannelDomainAliasEdit(IFormItemCollectionProvider formItemCollectionProvider, IFormDataBinder formDataBinder, IInfoProvider<WebsiteChannelDomainAliasInfo> websiteChannelDomainAliasInfoProvider) : base(formItemCollectionProvider, formDataBinder, websiteChannelDomainAliasInfoProvider)
+    public WebsiteChannelDomainAliasEdit(IFormItemCollectionProvider formItemCollectionProvider, 
+        IFormDataBinder formDataBinder, 
+        IInfoProvider<WebsiteChannelDomainAliasInfo> websiteChannelDomainAliasInfoProvider,
+        ICacheDependencyBuilderFactory cacheDependencyBuilderFactory) 
+        : base(formItemCollectionProvider, formDataBinder, websiteChannelDomainAliasInfoProvider, cacheDependencyBuilderFactory)
     {
     }
 }
 public class WebsiteChannelDomainAliasCreate : ModelEditPage<WebsiteChannelDomainAliasCreate.EditModel>
 {
     private readonly IInfoProvider<WebsiteChannelDomainAliasInfo> _websiteChannelDomainAliasInfoProvider;
+    private readonly ICacheDependencyBuilderFactory _cacheDependencyBuilderFactory;
     private EditModel _model;
 
     public WebsiteChannelDomainAliasCreate(IFormItemCollectionProvider formItemCollectionProvider,
         IFormDataBinder formDataBinder,
-        IInfoProvider<WebsiteChannelDomainAliasInfo> websiteChannelDomainAliasInfoProvider)
+        IInfoProvider<WebsiteChannelDomainAliasInfo> websiteChannelDomainAliasInfoProvider,
+        ICacheDependencyBuilderFactory cacheDependencyBuilderFactory)
         : base(formItemCollectionProvider, formDataBinder)
     {
         _websiteChannelDomainAliasInfoProvider = websiteChannelDomainAliasInfoProvider;
+        _cacheDependencyBuilderFactory = cacheDependencyBuilderFactory;
     }
 
     [PageParameter(typeof(IntPageModelBinder), typeof(ChannelEditSection))]
@@ -87,6 +97,13 @@ public class WebsiteChannelDomainAliasCreate : ModelEditPage<WebsiteChannelDomai
         websiteChannelDomainAlias.WebsiteChannelDomainAliasDomain = model.Domain;
 
         _websiteChannelDomainAliasInfoProvider.Set(websiteChannelDomainAlias);
+
+        // Trigger cache breaking for website channel to allow the changes to take effect immediately
+        var cacheDependencies = _cacheDependencyBuilderFactory.Create()
+            .ForInfoObjects<WebsiteChannelInfo>().All()
+            .Builder()
+            .Build();
+        CacheHelper.TouchKeys(cacheDependencies.CacheKeys);
 
         // Initializes a client response
         var response = ResponseFrom(new FormSubmissionResult(FormSubmissionStatus.ValidationSuccess)

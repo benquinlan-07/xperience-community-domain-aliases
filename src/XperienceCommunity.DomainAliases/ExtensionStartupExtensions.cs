@@ -1,5 +1,10 @@
-﻿using CMS.Core;
+﻿using CMS;
+using CMS.Core;
+using CMS.Websites.Internal;
+using CMS.Websites.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
+using XperienceCommunity.DomainAliases.Providers;
 
 namespace XperienceCommunity.DomainAliases;
 
@@ -14,6 +19,14 @@ public static class ExtensionStartupExtensions
     {
         serviceCollection
             .AddSingleton<ExtensionModuleInstaller>();
+
+        var websiteChannelDomainProvider = serviceCollection.FirstOrDefault(x => x.ServiceType == typeof(IWebsiteChannelDomainProvider));
+        if (websiteChannelDomainProvider != null)
+        {
+            serviceCollection.Remove(websiteChannelDomainProvider);
+            serviceCollection.AddKeyedSingleton(typeof(IWebsiteChannelDomainProvider), "kentico", websiteChannelDomainProvider.ImplementationType);
+            serviceCollection.AddSingleton<IWebsiteChannelDomainProvider, ExtensionWebsiteChannelDomainProvider>();
+        }
 
         return serviceCollection;
     }
