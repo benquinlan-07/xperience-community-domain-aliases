@@ -82,6 +82,16 @@ internal class ExtensionModuleInstaller
         };
         formInfo.AddFormItem(formItem);
 
+        formItem = new FormFieldInfo
+        {
+            Name = nameof(WebsiteChannelDomainAliasInfo.WebsiteChannelDomainAliasUseForAbsoluteUrl),
+            AllowEmpty = false,
+            Visible = true,
+            Precision = 0,
+            DataType = "boolean"
+        };
+        formInfo.AddFormItem(formItem);
+
         SetFormDefinition(info, formInfo);
 
         if (info.HasChanged)

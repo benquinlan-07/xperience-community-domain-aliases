@@ -36,12 +36,20 @@ public class ExtensionMiddleware
         var channelData = await cache.LoadAsync(async cacheSettings =>
         {
             // Add the cache dependencies
-            var cacheDependencies = cacheDependencyBuilderFactory.Create()
-                .ForInfoObjects<ChannelInfo>().All()
+            var cacheDependencies = cacheDependencyBuilderFactory
+                .Create().ForInfoObjects<ChannelInfo>().All()
                 .Builder().ForInfoObjects<WebsiteChannelInfo>().All()
                 .Builder().ForInfoObjects<WebsiteChannelDomainAliasInfo>().All()
                 .Builder().Build();
             cacheSettings.CacheDependency = cacheDependencies;
+
+            // Confirm the domain doesn't match an existing channel domain
+            var existingChannel = websiteChannelInfoProvider.Get()
+                .WhereEquals(nameof(WebsiteChannelInfo.WebsiteChannelDomain), hostLowered)
+                .FirstOrDefault();
+
+            if (existingChannel != null)
+                return (null, null, null);
 
             // Check to see if the domain matches an alias
             var domainAlias = websiteChannelDomainAliasInfoProvider.Get()
@@ -49,7 +57,7 @@ public class ExtensionMiddleware
                 .FirstOrDefault();
 
             if (domainAlias == null)
-                return (null, null);
+                return (null, null, null);
 
             // Get the channel for the alias
             var channel = channelInfoProvider.Get()
@@ -57,7 +65,7 @@ public class ExtensionMiddleware
                 .FirstOrDefault();
 
             if (channel == null)
-                return (null, null);
+                return (null, null, null);
 
             // Get the website for the channel
             var websiteChannel = websiteChannelInfoProvider.Get()
@@ -65,18 +73,21 @@ public class ExtensionMiddleware
                 .FirstOrDefault();
 
             if (websiteChannel == null)
-                return (null, null);
+                return (null, null, null);
 
-            return (WebsiteChannel: websiteChannel, Channel: channel);
+            return (WebsiteChannel: websiteChannel, Channel: channel, DomainAlias: domainAlias);
         }, cacheSettings);
 
         // If domain alias exists, set the website channel descriptor in the HttpContext.Items for later retrieval in the pipeline
-        if (channelData.WebsiteChannel != null && channelData.Channel != null)
+        if (channelData.WebsiteChannel != null && channelData.Channel != null && channelData.DomainAlias != null)
         {
-            var channelDescriptor = new WebsiteChannelDescriptor
+            var channelDescriptor = new WebsiteChannelAliasDescriptor
             {
                 WebsiteChannelID = channelData.WebsiteChannel.WebsiteChannelID,
-                WebsiteChannelName = channelData.Channel.ChannelName
+                WebsiteChannelName = channelData.Channel.ChannelName,
+                WebsiteChannelGUID = channelData.WebsiteChannel.WebsiteChannelGUID,
+                AliasDomain = channelData.DomainAlias.WebsiteChannelDomainAliasDomain,
+                AliasDomainUseForAbsoluteUrl = channelData.DomainAlias.WebsiteChannelDomainAliasUseForAbsoluteUrl
             };
             context.Items[ExtensionWebsiteChannelDomainProvider.ALIAS_WEBSITE_CHANNEL_CONTEXT_KEY] = channelDescriptor;
         }

@@ -82,6 +82,17 @@ public partial class WebsiteChannelDomainAliasInfo : AbstractInfo<WebsiteChannel
 
 
     /// <summary>
+    /// Website channel checkbox to indicate if using for absolute url.
+    /// </summary>
+    [DatabaseField]
+    public virtual bool WebsiteChannelDomainAliasUseForAbsoluteUrl
+    {
+        get => ValidationHelper.GetBoolean(GetValue(nameof(WebsiteChannelDomainAliasUseForAbsoluteUrl)), false);
+        set => SetValue(nameof(WebsiteChannelDomainAliasUseForAbsoluteUrl), value);
+    }
+
+
+    /// <summary>
     /// Deletes the object using appropriate provider.
     /// </summary>
     protected override void DeleteObject()

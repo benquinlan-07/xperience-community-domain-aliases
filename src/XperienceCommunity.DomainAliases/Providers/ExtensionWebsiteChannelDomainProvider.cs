@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using XperienceCommunity.DomainAliases.Models;
 
 namespace XperienceCommunity.DomainAliases.Providers;
 
@@ -22,14 +23,14 @@ internal sealed class ExtensionWebsiteChannelDomainProvider : IWebsiteChannelDom
         _httpContextAccessor = httpContextAccessor;
     }
 
-    private WebsiteChannelDescriptor GetAliasDescriptor()
+    private WebsiteChannelAliasDescriptor GetAliasDescriptor()
     {
         // Middleware previously set the website channel descriptor in the HttpContext.Items if a domain alias matched, so attempt to retrieve it here
         var items = _httpContextAccessor.HttpContext?.Items;
         if (items == null)
             return null;
 
-        if (items.TryGetValue(ALIAS_WEBSITE_CHANNEL_CONTEXT_KEY, out var websiteDescriptorValue) && websiteDescriptorValue is WebsiteChannelDescriptor value)
+        if (items.TryGetValue(ALIAS_WEBSITE_CHANNEL_CONTEXT_KEY, out var websiteDescriptorValue) && websiteDescriptorValue is WebsiteChannelAliasDescriptor value)
             return value;
 
         return null;
@@ -46,21 +47,44 @@ internal sealed class ExtensionWebsiteChannelDomainProvider : IWebsiteChannelDom
         return GetAliasDescriptor();
     }
 
-    public Task<ICollection<Uri>> GetAllDomains(int websiteChannelId, CancellationToken cancellationToken)
+    public async Task<ICollection<Uri>> GetAllDomains(int websiteChannelId, CancellationToken cancellationToken)
     {
         // Use default implementation
-        return _defaultWebsiteChannelDomainProvider.GetAllDomains(websiteChannelId, cancellationToken);
+        var allDomains = await _defaultWebsiteChannelDomainProvider.GetAllDomains(websiteChannelId, cancellationToken);
+
+        // Add alias domain if used for absolute urls
+        var aliasDescriptor = GetAliasDescriptor();
+        if (aliasDescriptor != null && websiteChannelId == aliasDescriptor.WebsiteChannelID && aliasDescriptor.AliasDomainUseForAbsoluteUrl)
+        {
+            var aliasDomainLower = aliasDescriptor.AliasDomain.ToLower();
+            if (aliasDomainLower.StartsWith("http://") || aliasDomainLower.StartsWith("https://"))
+                allDomains.Add(new Uri(aliasDomainLower));
+            else 
+                allDomains.Add(new Uri($"https://{aliasDomainLower}"));
+        }
+
+        return allDomains;
     }
 
-    public Task<string> GetDomain(int websiteChannelId, CancellationToken cancellationToken)
+    public async Task<string> GetDomain(int websiteChannelId, CancellationToken cancellationToken)
     {
+        var aliasDescriptor = GetAliasDescriptor();
+        if (aliasDescriptor != null && websiteChannelId == aliasDescriptor.WebsiteChannelID && aliasDescriptor.AliasDomainUseForAbsoluteUrl)
+            return aliasDescriptor.AliasDomain;
+
         // Use default implementation
-        return _defaultWebsiteChannelDomainProvider.GetDomain(websiteChannelId, cancellationToken);
+        var defaultDomain = await _defaultWebsiteChannelDomainProvider.GetDomain(websiteChannelId, cancellationToken);
+        return defaultDomain;
     }
 
-    public Task<string> GetDomain(Guid websiteChannelGuid, CancellationToken cancellationToken)
+    public async Task<string> GetDomain(Guid websiteChannelGuid, CancellationToken cancellationToken)
     {
+        var aliasDescriptor = GetAliasDescriptor();
+        if (aliasDescriptor != null && websiteChannelGuid == aliasDescriptor.WebsiteChannelGUID && aliasDescriptor.AliasDomainUseForAbsoluteUrl)
+            return aliasDescriptor.AliasDomain;
+
         // Use default implementation
-        return _defaultWebsiteChannelDomainProvider.GetDomain(websiteChannelGuid, cancellationToken);
+        var defaultDomain = await _defaultWebsiteChannelDomainProvider.GetDomain(websiteChannelGuid, cancellationToken);
+        return defaultDomain;
     }
 }

@@ -25,8 +25,9 @@ public class WebsiteChannelDomainAliasEdit : WebsiteChannelDomainAliasCreate
     public WebsiteChannelDomainAliasEdit(IFormItemCollectionProvider formItemCollectionProvider, 
         IFormDataBinder formDataBinder, 
         IInfoProvider<WebsiteChannelDomainAliasInfo> websiteChannelDomainAliasInfoProvider,
-        ICacheDependencyBuilderFactory cacheDependencyBuilderFactory) 
-        : base(formItemCollectionProvider, formDataBinder, websiteChannelDomainAliasInfoProvider, cacheDependencyBuilderFactory)
+        ICacheDependencyBuilderFactory cacheDependencyBuilderFactory,
+        IPageLinkGenerator pageLinkGenerator) 
+        : base(formItemCollectionProvider, formDataBinder, websiteChannelDomainAliasInfoProvider, cacheDependencyBuilderFactory, pageLinkGenerator)
     {
     }
 }
@@ -34,16 +35,19 @@ public class WebsiteChannelDomainAliasCreate : ModelEditPage<WebsiteChannelDomai
 {
     private readonly IInfoProvider<WebsiteChannelDomainAliasInfo> _websiteChannelDomainAliasInfoProvider;
     private readonly ICacheDependencyBuilderFactory _cacheDependencyBuilderFactory;
+    private readonly IPageLinkGenerator _pageLinkGenerator;
     private EditModel _model;
 
     public WebsiteChannelDomainAliasCreate(IFormItemCollectionProvider formItemCollectionProvider,
         IFormDataBinder formDataBinder,
         IInfoProvider<WebsiteChannelDomainAliasInfo> websiteChannelDomainAliasInfoProvider,
-        ICacheDependencyBuilderFactory cacheDependencyBuilderFactory)
+        ICacheDependencyBuilderFactory cacheDependencyBuilderFactory,
+        IPageLinkGenerator pageLinkGenerator)
         : base(formItemCollectionProvider, formDataBinder)
     {
         _websiteChannelDomainAliasInfoProvider = websiteChannelDomainAliasInfoProvider;
         _cacheDependencyBuilderFactory = cacheDependencyBuilderFactory;
+        _pageLinkGenerator = pageLinkGenerator;
     }
 
     [PageParameter(typeof(IntPageModelBinder), typeof(ChannelEditSection))]
@@ -60,6 +64,7 @@ public class WebsiteChannelDomainAliasCreate : ModelEditPage<WebsiteChannelDomai
         if (websiteChannelDomainAlias != null)
         {
             Model.Domain = websiteChannelDomainAlias.WebsiteChannelDomainAliasDomain;
+            Model.UseForAbsoluteUrls = websiteChannelDomainAlias.WebsiteChannelDomainAliasUseForAbsoluteUrl;
         }
 
         await base.ConfigurePage();
@@ -95,6 +100,7 @@ public class WebsiteChannelDomainAliasCreate : ModelEditPage<WebsiteChannelDomai
         }
 
         websiteChannelDomainAlias.WebsiteChannelDomainAliasDomain = model.Domain;
+        websiteChannelDomainAlias.WebsiteChannelDomainAliasUseForAbsoluteUrl = model.UseForAbsoluteUrls;
 
         _websiteChannelDomainAliasInfoProvider.Set(websiteChannelDomainAlias);
 
@@ -105,16 +111,26 @@ public class WebsiteChannelDomainAliasCreate : ModelEditPage<WebsiteChannelDomai
             .Build();
         CacheHelper.TouchKeys(cacheDependencies.CacheKeys);
 
-        // Initializes a client response
-        var response = ResponseFrom(new FormSubmissionResult(FormSubmissionStatus.ValidationSuccess)
+        if (this is WebsiteChannelDomainAliasEdit)
         {
-            // Returns the submitted field values to the client (repopulates the form)
-            Items = await formItems.OnlyVisible().GetClientProperties(),
-        });
+            // Initializes a client response
+            var response = ResponseFrom(new FormSubmissionResult(FormSubmissionStatus.ValidationSuccess)
+            {
+                // Returns the submitted field values to the client (repopulates the form)
+                Items = await formItems.OnlyVisible().GetClientProperties(),
+            });
 
-        response.AddSuccessMessage($"Domain alias has been {(this is WebsiteChannelDomainAliasEdit ? "updated" : "created")}.");
-
-        return response;
+            response.AddSuccessMessage($"Domain alias has been updated");
+            return response;
+        }
+        else
+        {
+            // Initializes a client response
+            var editPageUrl = _pageLinkGenerator.GetPath(typeof(WebsiteChannelDomainAliasEdit), new PageParameterValues() { { typeof(ChannelEditSection), ChannelId }, { typeof(WebsiteChannelDomainAliasEdit), websiteChannelDomainAlias.WebsiteChannelDomainAliasId } });
+            var response = NavigateTo(editPageUrl);
+            response.AddSuccessMessage("Domain alias has been created");
+            return response;
+        }
     }
 
     protected override EditModel Model
@@ -127,5 +143,8 @@ public class WebsiteChannelDomainAliasCreate : ModelEditPage<WebsiteChannelDomai
         [TextInputComponent(Label = "Domain")]
         [RequiredValidationRule(ErrorMessage = "Domain is required.")]
         public string Domain { get; set; }
+
+        [CheckBoxComponent(Label = "Use for absolute URLs", ExplanationText = "Indicates if absolute URLs should resolve using this domain alias when viewed on this domain.")]
+        public bool UseForAbsoluteUrls { get; set; }
     }
 }
