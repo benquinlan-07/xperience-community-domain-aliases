@@ -10,12 +10,6 @@ The extension was developed to meet requirement to be able to use a hosted devel
 
 ## Requirements
 
-### Library Version Matrix
-
-| Xperience Version | Library Version |
-| ----------------- | --------------- |
-| >= 31.9.0         | 1.0.0           |
-
 ### Dependencies
 
 - [ASP.NET Core 6.0](https://dotnet.microsoft.com/en-us/download)
