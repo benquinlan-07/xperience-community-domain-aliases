@@ -36,6 +36,36 @@ internal sealed class ExtensionWebsiteChannelDomainProvider : IWebsiteChannelDom
         return null;
     }
 
+    private bool TryGetAliasDomain(int websiteChannelId, out string aliasDomain)
+    {
+        var aliasDescriptor = GetAliasDescriptor();
+        if (aliasDescriptor != null
+            && websiteChannelId == aliasDescriptor.WebsiteChannelID
+            && aliasDescriptor.AliasDomainUseForAbsoluteUrl)
+        {
+            aliasDomain = aliasDescriptor.AliasDomain;
+            return true;
+        }
+
+        aliasDomain = null;
+        return false;
+    }
+
+    private bool TryGetAliasDomain(Guid websiteChannelGuid, out string aliasDomain)
+    {
+        var aliasDescriptor = GetAliasDescriptor();
+        if (aliasDescriptor != null
+            && websiteChannelGuid == aliasDescriptor.WebsiteChannelGUID
+            && aliasDescriptor.AliasDomainUseForAbsoluteUrl)
+        {
+            aliasDomain = aliasDescriptor.AliasDomain;
+            return true;
+        }
+
+        aliasDomain = null;
+        return false;
+    }
+
     public async Task<WebsiteChannelDescriptor> GetChannel(string domainName, CancellationToken cancellationToken)
     {
         // Try get default value
@@ -54,12 +84,14 @@ internal sealed class ExtensionWebsiteChannelDomainProvider : IWebsiteChannelDom
 
         // Add alias domain if used for absolute urls
         var aliasDescriptor = GetAliasDescriptor();
-        if (aliasDescriptor != null && websiteChannelId == aliasDescriptor.WebsiteChannelID && aliasDescriptor.AliasDomainUseForAbsoluteUrl)
+        if (aliasDescriptor != null
+            && websiteChannelId == aliasDescriptor.WebsiteChannelID
+            && aliasDescriptor.AliasDomainUseForAbsoluteUrl)
         {
             var aliasDomainLower = aliasDescriptor.AliasDomain.ToLower();
             if (aliasDomainLower.StartsWith("http://") || aliasDomainLower.StartsWith("https://"))
                 allDomains.Add(new Uri(aliasDomainLower));
-            else 
+            else
                 allDomains.Add(new Uri($"https://{aliasDomainLower}"));
         }
 
@@ -68,23 +100,45 @@ internal sealed class ExtensionWebsiteChannelDomainProvider : IWebsiteChannelDom
 
     public async Task<string> GetDomain(int websiteChannelId, CancellationToken cancellationToken)
     {
-        var aliasDescriptor = GetAliasDescriptor();
-        if (aliasDescriptor != null && websiteChannelId == aliasDescriptor.WebsiteChannelID && aliasDescriptor.AliasDomainUseForAbsoluteUrl)
-            return aliasDescriptor.AliasDomain;
+        if (TryGetAliasDomain(websiteChannelId, out var aliasDomain))
+            return aliasDomain;
 
         // Use default implementation
         var defaultDomain = await _defaultWebsiteChannelDomainProvider.GetDomain(websiteChannelId, cancellationToken);
         return defaultDomain;
     }
 
+    public Task<string> GetDomain(int websiteChannelId, string languageName, CancellationToken cancellationToken)
+    {
+        if (TryGetAliasDomain(websiteChannelId, out var aliasDomain))
+            return Task.FromResult(aliasDomain);
+
+        return _defaultWebsiteChannelDomainProvider.GetDomain(websiteChannelId, languageName, cancellationToken);
+    }
+
+    public Task<string> GetDomain(int websiteChannelId, int languageId, CancellationToken cancellationToken)
+    {
+        if (TryGetAliasDomain(websiteChannelId, out var aliasDomain))
+            return Task.FromResult(aliasDomain);
+
+        return _defaultWebsiteChannelDomainProvider.GetDomain(websiteChannelId, languageId, cancellationToken);
+    }
+
     public async Task<string> GetDomain(Guid websiteChannelGuid, CancellationToken cancellationToken)
     {
-        var aliasDescriptor = GetAliasDescriptor();
-        if (aliasDescriptor != null && websiteChannelGuid == aliasDescriptor.WebsiteChannelGUID && aliasDescriptor.AliasDomainUseForAbsoluteUrl)
-            return aliasDescriptor.AliasDomain;
+        if (TryGetAliasDomain(websiteChannelGuid, out var aliasDomain))
+            return aliasDomain;
 
         // Use default implementation
         var defaultDomain = await _defaultWebsiteChannelDomainProvider.GetDomain(websiteChannelGuid, cancellationToken);
         return defaultDomain;
+    }
+
+    public Task<string> GetDomain(Guid websiteChannelGuid, string languageName, CancellationToken cancellationToken)
+    {
+        if (TryGetAliasDomain(websiteChannelGuid, out var aliasDomain))
+            return Task.FromResult(aliasDomain);
+
+        return _defaultWebsiteChannelDomainProvider.GetDomain(websiteChannelGuid, languageName, cancellationToken);
     }
 }

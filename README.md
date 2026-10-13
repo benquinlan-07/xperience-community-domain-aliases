@@ -14,7 +14,7 @@ The extension was developed to meet requirement to be able to use a hosted devel
 
 | Xperience Version | Library Version |
 | ----------------- | --------------- |
-| >= 29.5.3         | 1.0.0           |
+| >= 31.9.0         | 1.0.0           |
 
 ### Dependencies
 
